@@ -2,11 +2,14 @@ pragma solidity ^0.4.24;
 
 import "./StandardToken.sol";
 import "./Owned.sol";
+import "./SafeMath.sol";
 
 /**
  * @title The PetCoin Token contract.
  */
 contract PetCoin is StandardToken, Owned {
+
+  using SafeMath for uint256;
 
   // Token metadata
   string public constant name = "Petcoin";
@@ -16,10 +19,10 @@ contract PetCoin is StandardToken, Owned {
   // Token supply breakdown
   uint256 public constant initialSupply = 2340 * (10**6) * 10**decimals; // 2.34 billion
   uint256 public constant stageOneSupply = (10**5) * 10**decimals; // 100,000 tokens for ICO stage 1
-  uint256 public constant stageTwoSupply = (10**6) * 10*decimals; // 1,000,000 tokens for ICO stage 2
-  uint256 public constant stageThreeSupply = (10**7) * 10*decimals; // 10,000,000 tokens for ICO stage 3
+  uint256 public constant stageTwoSupply = (10**6) * 10**decimals; // 1,000,000 tokens for ICO stage 2
+  uint256 public constant stageThreeSupply = (10**7) * 10**decimals; // 10,000,000 tokens for ICO stage 3
 
-  // Initial Token holder addresses. !!!Important!!! TODO rename the addresses meaningfully and set the right values
+  // Initial Token holder addresses.
   // one billion token holders
   address public constant appWallet = 0x9F6899364610B96D7718Fe3c03A6BD1Deb8623CE;
   address public constant genWallet = 0x530E6B9A17e9AbB77CF4E125b99Bf5D5CAD69942;
@@ -45,16 +48,23 @@ contract PetCoin is StandardToken, Owned {
     uint256 oneBillion = (10**9) * 10**decimals;
     uint256 oneHundredMillion = 100 * (10**6) * 10**decimals;
     balances[appWallet] = oneBillion;
+    emit Transfer(address(0), appWallet, oneBillion);
     balances[genWallet] = oneBillion;
+    emit Transfer(address(0), genWallet, oneBillion);
     balances[ceoWallet] = oneHundredMillion;
+    emit Transfer(address(0), ceoWallet, oneHundredMillion);
     balances[cooWallet] = oneHundredMillion;
+    emit Transfer(address(0), cooWallet, oneHundredMillion);
     balances[devWallet] = oneHundredMillion;
+    emit Transfer(address(0), devWallet, oneHundredMillion);
     balances[poolWallet] = initialSupply.sub(balances[appWallet])
-                                        .sub(balances[genWallet])
-                                        .sub(balances[ceoWallet])
-                                        .sub(balances[cooWallet])
-                                        .sub(balances[devWallet]);
+    .sub(balances[genWallet])
+    .sub(balances[ceoWallet])
+    .sub(balances[cooWallet])
+    .sub(balances[devWallet]);
+    emit Transfer(address(0), poolWallet, balances[poolWallet]);
     balances[msg.sender] = stageOneSupply.add(stageTwoSupply).add(stageThreeSupply);
+    emit Transfer(address(0), msg.sender, balances[msg.sender]);
   }
 
   event Mint(address indexed to, uint256 amount);
