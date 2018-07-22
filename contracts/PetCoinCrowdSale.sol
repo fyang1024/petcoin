@@ -17,7 +17,7 @@ contract PetCoinCrowdSale is Owned {
   // Conversion rates
   uint256 public constant stageOneRate = 4500; // 1 ETH = 4500 PETC
   uint256 public constant stageTwoRate = 3000; // 1 ETH = 3000 PETC
-  uint256 public constant stageThreeRate = 2300; // 1 ETH = 2300 PETC
+  uint256 public constant stageThreeRate = 2557; // 1 ETH = 2557 PETC
 
   // The token being sold
   PetCoin public token;
@@ -71,7 +71,7 @@ contract PetCoinCrowdSale is Owned {
    * @param _token Address of the token being sold
    */
   constructor(address _wallet, PetCoin _token)
-  public
+    public
   {
     require(_wallet != address(0));
     require(_token != address(0));
@@ -123,9 +123,9 @@ contract PetCoinCrowdSale is Owned {
   // -----------------------------------------
 
   function kickoff()
-  external
-  onlyOwner
-  notStarted
+    external
+    onlyOwner
+    notStarted
   {
     state = TokenSaleState.STAGE_ONE;
   }
@@ -134,9 +134,9 @@ contract PetCoinCrowdSale is Owned {
    * @dev fallback function ***DO NOT OVERRIDE***
    */
   function ()
-  external
-  payable
-  saleInProgress
+    external
+    payable
+    saleInProgress
   {
     require(stages[uint256(state)].rate > 0);
     require(stages[uint256(state)].remaining > 0);
@@ -191,7 +191,7 @@ contract PetCoinCrowdSale is Owned {
   // -----------------------------------------
 
   function _moveStage()
-  internal
+    internal
   {
     if (state == TokenSaleState.STAGE_ONE) {
       state = TokenSaleState.STAGE_TWO;

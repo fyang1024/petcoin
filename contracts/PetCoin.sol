@@ -21,14 +21,14 @@ contract PetCoin is StandardToken, Owned {
 
   // Initial Token holder addresses. !!!Important!!! TODO rename the addresses meaningfully and set the right values
   // one billion token holders
-  address public constant a1 = 0xf088394D9AEec53096A18Fb192C98FD90495416C;
-  address public constant a2 = 0x18429e9a0282D8a1483154A30C612293877b6273;
+  address public constant appWallet = 0x9F6899364610B96D7718Fe3c03A6BD1Deb8623CE;
+  address public constant genWallet = 0x530E6B9A17e9AbB77CF4E125b99Bf5D5CAD69942;
   // one hundred million token holders
-  address public constant a3 = 0xFa8c26d4d8a24fB880b7DBf91C19AdbC218c6322;
-  address public constant a4 = 0xE93381fB4c4F14bDa253907b18faD305D799241a;
-  address public constant a5 = 0x7e9c55e5Ad1A2dbC4a98606B2C7855d7785E22b0;
+  address public constant ceoWallet = 0x388Ed3f7Aa1C4461460197FcCE5cfEf84D562c6A;
+  address public constant cooWallet = 0xa2c59e6a91B4E502CF8C95A61F50D3aB1AB30cBA;
+  address public constant devWallet = 0x7D2ea29E2d4A95f4725f52B941c518C15eAE3c64;
   // the rest token holder
-  address public constant a6 = 0x41A313bC923927A86a384c9128718300Fd75C34F;
+  address public constant poolWallet = 0x7e75fe6b73993D9Be9cb975364ec70Ee2C22c13A;
 
   // mint configuration
   uint256 public constant yearlyMintCap = (10*7) * 10*decimals; //10,000,000 tokens each year
@@ -42,12 +42,18 @@ contract PetCoin is StandardToken, Owned {
     public
   {
     totalSupply_ = initialSupply.add(stageOneSupply).add(stageTwoSupply).add(stageThreeSupply);
-    balances[a1] = (10**9) * 10**decimals; // 1 billion tokens
-    balances[a2] = (10**9) * 10**decimals; // 1 billion tokens
-    balances[a3] = 100 * (10**6) * 10**decimals; // 100 million tokens
-    balances[a4] = 100 * (10**6) * 10**decimals; // 100 million tokens
-    balances[a5] = 100 * (10**6) * 10**decimals; // 100 million tokens
-    balances[a6] = initialSupply.sub(balances[1]).sub(balances[2]).sub(balances[3]).sub(balances[4]).sub(balances[5]); // the rest
+    uint256 oneBillion = (10**9) * 10**decimals;
+    uint256 oneHundredMillion = 100 * (10**6) * 10**decimals;
+    balances[appWallet] = oneBillion;
+    balances[genWallet] = oneBillion;
+    balances[ceoWallet] = oneHundredMillion;
+    balances[cooWallet] = oneHundredMillion;
+    balances[devWallet] = oneHundredMillion;
+    balances[poolWallet] = initialSupply.sub(balances[appWallet])
+                                        .sub(balances[genWallet])
+                                        .sub(balances[ceoWallet])
+                                        .sub(balances[cooWallet])
+                                        .sub(balances[devWallet]);
     balances[msg.sender] = stageOneSupply.add(stageTwoSupply).add(stageThreeSupply);
   }
 
@@ -62,7 +68,7 @@ contract PetCoin is StandardToken, Owned {
     address _to
   )
     onlyOwner
-    public
+    external
     returns (bool)
   {
     uint16 year = _getYear(now);
