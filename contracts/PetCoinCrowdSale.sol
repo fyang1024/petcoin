@@ -76,7 +76,6 @@ contract PetCoinCrowdSale is Owned {
     require(_wallet != address(0));
     require(_token != address(0));
 
-    owner = msg.sender;
     wallet = _wallet;
     token = _token;
 
