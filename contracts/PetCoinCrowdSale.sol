@@ -67,17 +67,17 @@ contract PetCoinCrowdSale is Owned {
   );
 
   /**
-   * @param _wallet Address where collected funds will be forwarded to
    * @param _token Address of the token being sold
+   * @param _wallet Address where collected funds will be forwarded to
    */
-  constructor(address _wallet, PetCoin _token)
+  constructor(PetCoin _token, address _wallet)
     public
   {
-    require(_wallet != address(0));
     require(_token != address(0));
+    require(_wallet != address(0));
 
-    wallet = _wallet;
     token = _token;
+    wallet = _wallet;
 
     state = TokenSaleState.NOT_STARTED;
     stages[uint256(TokenSaleState.STAGE_ONE)] = Stage(stageOneRate, token.stageOneSupply());
