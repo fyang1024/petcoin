@@ -154,7 +154,7 @@ contract PetCoinCrowdSale is Owned {
   }
 
 
-  function setRates(uint256 _stageOneRate, uint256 _stageTwoRate, uint256 _stageThreeRate)
+  function updateRates(uint256 _stageOneRate, uint256 _stageTwoRate, uint256 _stageThreeRate)
     external
     onlyOwner
   {
