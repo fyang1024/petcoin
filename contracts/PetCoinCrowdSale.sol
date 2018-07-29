@@ -40,8 +40,7 @@ contract PetCoinCrowdSale is Owned {
   }
 
   // Enum as mapping key not supported by Solidity yet
-  mapping(uint256 => Stage) stages;
-
+  mapping(uint256 => Stage) public stages;
 
   /**
    * Event for token purchase logging
@@ -161,6 +160,9 @@ contract PetCoinCrowdSale is Owned {
     stageOneRate = _stageOneRate;
     stageTwoRate = _stageTwoRate;
     stageThreeRate = _stageThreeRate;
+    stages[uint256(TokenSaleState.STAGE_ONE)].rate = stageOneRate;
+    stages[uint256(TokenSaleState.STAGE_TWO)].rate = stageTwoRate;
+    stages[uint256(TokenSaleState.STAGE_THREE)].rate = stageThreeRate;
     emit RatesUpdate(msg.sender, stageOneRate, stageTwoRate, stageThreeRate);
   }
 
@@ -201,20 +203,20 @@ contract PetCoinCrowdSale is Owned {
       tokens
     );
 
-    if (refund > 0) { // refund the purchaser if required
-      msg.sender.transfer(refund);
-      emit Refund(
-        msg.sender,
-        refund
-      );
-    }
-
     // update remaining of the stage
     stages[uint256(state)].remaining -= tokens;
     assert(stages[uint256(state)].remaining >= 0);
 
     if (stages[uint256(state)].remaining == 0) {
       _moveStage();
+    }
+
+    if (refund > 0) { // refund the purchaser if required
+      msg.sender.transfer(refund);
+      emit Refund(
+        msg.sender,
+        refund
+      );
     }
 
     _forwardFunds();
