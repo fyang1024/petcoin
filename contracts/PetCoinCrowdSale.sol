@@ -194,9 +194,6 @@ contract PetCoinCrowdSale is Owned {
     // update state
     weiRaised = weiRaised.add(weiAmount);
 
-    // transfer tokens to buyer
-    token.safeTransfer(msg.sender, tokens);
-
     emit TokenPurchase(
       msg.sender,
       weiAmount,
@@ -211,6 +208,12 @@ contract PetCoinCrowdSale is Owned {
       _moveStage();
     }
 
+    // transfer tokens to buyer
+    token.safeTransfer(msg.sender, tokens);
+
+    // forward ETH to the wallet
+    _forwardFunds(weiAmount);
+
     if (refund > 0) { // refund the purchaser if required
       msg.sender.transfer(refund);
       emit Refund(
@@ -218,8 +221,6 @@ contract PetCoinCrowdSale is Owned {
         refund
       );
     }
-
-    _forwardFunds();
   }
 
   // -----------------------------------------
@@ -245,7 +246,7 @@ contract PetCoinCrowdSale is Owned {
   /**
    * @dev Determines how ETH is stored/forwarded on purchases.
    */
-  function _forwardFunds() internal {
-    wallet.transfer(msg.value);
+  function _forwardFunds(uint256 weiAmount) internal {
+    wallet.transfer(weiAmount);
   }
 }
