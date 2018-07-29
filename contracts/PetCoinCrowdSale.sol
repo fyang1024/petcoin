@@ -15,9 +15,9 @@ contract PetCoinCrowdSale is Owned {
   using SafeERC20 for PetCoin;
 
   // Conversion rates
-  uint256 public constant stageOneRate = 4500; // 1 ETH = 4500 PETC
-  uint256 public constant stageTwoRate = 3000; // 1 ETH = 3000 PETC
-  uint256 public constant stageThreeRate = 2557; // 1 ETH = 2557 PETC
+  uint256 public stageOneRate = 4500; // 1 ETH = 4500 PETC
+  uint256 public stageTwoRate = 3000; // 1 ETH = 3000 PETC
+  uint256 public stageThreeRate = 2557; // 1 ETH = 2557 PETC
 
   // The token being sold
   PetCoin public token;
@@ -64,6 +64,30 @@ contract PetCoinCrowdSale is Owned {
   event Refund(
     address indexed purchaser,
     uint256 value
+  );
+
+  /**
+   * Event for move stage
+   * @param oldState old state
+   * @param newState new state
+   */
+  event MoveStage(
+    TokenSaleState oldState,
+    TokenSaleState newState
+  );
+
+  /**
+ * Event for rates update
+ * @param who updated the rates
+ * @param stageOneRate new stageOneRate
+ * @param stageTwoRate new stageTwoRate
+ * @param stageThreeRate new stageThreeRate
+ */
+  event RatesUpdate(
+    address indexed who,
+    uint256 stageOneRate,
+    uint256 stageTwoRate,
+    uint256 stageThreeRate
   );
 
   /**
@@ -126,7 +150,18 @@ contract PetCoinCrowdSale is Owned {
     onlyOwner
     notStarted
   {
-    state = TokenSaleState.STAGE_ONE;
+    _moveStage();
+  }
+
+
+  function setRates(uint256 _stageOneRate, uint256 _stageTwoRate, uint256 _stageThreeRate)
+    external
+    onlyOwner
+  {
+    stageOneRate = _stageOneRate;
+    stageTwoRate = _stageTwoRate;
+    stageThreeRate = _stageThreeRate;
+    emit RatesUpdate(msg.sender, stageOneRate, stageTwoRate, stageThreeRate);
   }
 
   /**
@@ -192,13 +227,17 @@ contract PetCoinCrowdSale is Owned {
   function _moveStage()
     internal
   {
-    if (state == TokenSaleState.STAGE_ONE) {
+    TokenSaleState oldState = state;
+    if (state == TokenSaleState.NOT_STARTED) {
+      state = TokenSaleState.STAGE_ONE;
+    } else if (state == TokenSaleState.STAGE_ONE) {
       state = TokenSaleState.STAGE_TWO;
     } else if (state == TokenSaleState.STAGE_TWO) {
       state = TokenSaleState.STAGE_THREE;
     } else if (state == TokenSaleState.STAGE_THREE) {
       state = TokenSaleState.COMPLETED;
     }
+    emit MoveStage(oldState, state);
   }
 
   /**
