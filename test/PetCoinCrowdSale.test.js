@@ -24,4 +24,18 @@ contract('PetCoinCrowdSale', async(accounts) => {
         let crowdsale = await PetCoinCrowdSale.new(petcoin.address, accounts[1]);
         await tryCatch(crowdsale.send(10, {from: accounts[2]}), errorTypes.revert);
     });
+
+    it('should be only owner who can update rates', async () => {
+        let petcoin = await PetCoin.deployed();
+        let crowdsale = await PetCoinCrowdSale.new(petcoin.address, accounts[1]);
+        await tryCatch(crowdsale.updateRates.call(50000, 40000, 30000, {from: accounts[1]}), errorTypes.revert);
+    });
+
+    it('should update rates', async () => {
+        let petcoin = await PetCoin.deployed();
+        let crowdsale = await PetCoinCrowdSale.new(petcoin.address, accounts[1]);
+        await crowdsale.updateRates(50000, 40000, 30000);
+        let stageOneRate = await crowdsale.stageOneRate();
+        assert.equal(stageOneRate.valueOf(), 50000);
+    });
 })
